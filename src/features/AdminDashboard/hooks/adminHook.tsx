@@ -43,7 +43,7 @@ export const useAdmin = () => {
   // Handler: Fetch Metrics
   const fetchMetrics = async () => {
     const data = await adminServices.getMetrics();
-    if (data.success) setMetrics(data.metrics);
+    if (data.success) setMetrics(data);
   };
   // Inside useAdmin.ts
 

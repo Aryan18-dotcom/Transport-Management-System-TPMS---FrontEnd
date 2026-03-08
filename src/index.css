@@ -12,3 +12,21 @@ html, body {
 .input {
   @apply w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition;
 }
+
+/* Sleek Scrollbar for Chrome, Safari, and Edge */
+::-webkit-scrollbar {
+  width: 5px;   /* Slim width for a professional look */
+  height: 5px;  /* For horizontal scrollers */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  /* indigo-600: #4f46e5 */
+  background: #4f46e5; 
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  /* thumb color (neutral-800) | track color (neutral-950) */
+  scrollbar-color: oklch(62.078% 0.20567 259.002 / 0.76) #0a0a0a;
+}

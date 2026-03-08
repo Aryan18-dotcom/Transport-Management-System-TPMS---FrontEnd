@@ -1,181 +1,310 @@
-import { Truck, Wrench, Wallet, Search, Bell, AlertTriangle, Activity } from "lucide-react";
+import React, { useEffect, useMemo } from 'react';
+import {
+  Truck, Wallet, Bell, Activity, TrendingUp,
+  FileWarning, Gauge, ShieldCheck,
+  AlertCircle, ClipboardList, BarChart3, ArrowRight
+} from "lucide-react";
+import { useAdmin } from '../hooks/AdminHook';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router';
 
 const MainDashboard = () => {
+  const { fetchMetrics, metrics, adminLoading } = useAdmin();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchMetrics();
+  }, []);
+
+  // 🔥 1. SAFE DATA EXTRACTION & FLATTENING
+  const coreData = useMemo(() => {
+    if (!metrics || !metrics.metrics) return null;
+
+    const company = metrics.company;
+    const stats = metrics.metrics;
+    const financials = stats.financials;
+
+    const toLakhs = (val: number) => (val / 100000).toFixed(2);
+    const toK = (val: number) => (val / 1000).toFixed(1) + "k";
+
+    // Flatten nested alerts into individual document tasks
+    const allIndividualAlerts = stats.compliance.flatMap((vehicle: any) =>
+      vehicle.alerts.map((alert: any) => ({
+        truck: vehicle.truck,
+        type: alert.type,
+        date: alert.date,
+        vehicleId: vehicle.truckId // Used for navigation to specific truck edit page
+      }))
+    );
+
+    return {
+      companyName: company?.companyName || "Operational Hub",
+      gst: company?.gstNumber || "N/A",
+      revenueL: toLakhs(financials?.grossRevenue || 0),
+      holdL: toLakhs(financials?.moneyOnHold || 0),
+      monthlyRevK: toK(financials?.monthlyRevenue || 0),
+      monthlyProfitK: toK(financials?.monthlyProfit || 0),
+      todayVolume: (financials?.todayVolume || 0).toLocaleString('en-IN'),
+      fleet: stats.fleet?.breakdown || {},
+      recent: stats.recentActivity || [],
+      allAlerts: allIndividualAlerts,
+      growth: stats.growthChart || []
+    };
+  }, [metrics]);
+
+  if (adminLoading || !coreData) {
     return (
-        <>
-            <header className="sticky top-0 z-30 bg-[#070707]/80 backdrop-blur-md border-b border-neutral-800 px-8 py-5 flex justify-between items-center">
-                <div>
-                    <h1 className="text-xl font-bold text-white tracking-tight">Enterprise Overview</h1>
-                    <p className="text-zinc-500 text-xs">Managing Logistic Operations & Financials</p>
-                </div>
-
-                <div className="flex items-center gap-4">
-                    <div className="relative group">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" size={16} />
-                        <input type="text" placeholder="Cmd + K to search truck..." className="bg-neutral-900 border border-neutral-800 rounded-xl pl-9 pr-4 py-2 text-xs focus:ring-2 focus:ring-indigo-500/50 w-64 outline-none transition-all" />
-                    </div>
-                    <div className="p-2 bg-neutral-900 border border-neutral-800 rounded-xl text-zinc-400 cursor-pointer hover:text-white transition-colors relative">
-                        <Bell size={18} />
-                        <span className="absolute top-2 right-2 w-2 h-2 bg-indigo-500 rounded-full border-2 border-neutral-900" />
-                    </div>
-                </div>
-            </header>
-
-            <div className="p-8 space-y-8 pb-20">
-                {/* Top 4 Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <StatCard title="Today's Est. Revenue" value="₹74,200" change="+8.2%" icon={<Activity size={20} />} color="indigo" />
-                    <StatCard title="Pending Payment" value="₹12,40,000" change="-1.5%" icon={<Wallet size={20} />} color="amber" />
-
-                    {/* Active Trips Card (Modified) */}
-                    <div className="bg-neutral-900 border border-neutral-800 p-5 rounded-2xl relative overflow-hidden group">
-                        <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-2 font-bold flex items-center gap-2">
-                            <Truck size={12} /> Active Trips
-                        </p>
-                        <div className="flex items-baseline gap-2">
-                            <h4 className="text-2xl font-bold text-white">10 <span className="text-zinc-600 font-medium text-sm">/ 15</span></h4>
-                        </div>
-                        <p className="text-[10px] text-zinc-400 mt-1 italic">Company Fleet Utilization</p>
-                        <div className="absolute right-0 bottom-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                            <Truck size={64} />
-                        </div>
-                    </div>
-
-                    {/* Ready for Trip Card (New) */}
-                    <div className="bg-neutral-900 border border-neutral-800 p-5 rounded-2xl border-l-4 border-l-emerald-500 shadow-lg shadow-emerald-500/5">
-                        <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-2 font-bold">Ready for Trip</p>
-                        <h4 className="text-3xl font-bold text-emerald-400">5 <span className="text-xs font-normal text-zinc-500 ml-1">Trucks Available</span></h4>
-                        <p className="text-[10px] text-zinc-500 mt-1">Excludes maintenance & unloading</p>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-12 gap-6 items-start">
-                    {/* Vehicle Tracking - Focus on Available Trucks (60%) */}
-                    <div className="col-span-12 lg:col-span-8 bg-neutral-900/50 border border-neutral-800 rounded-3xl p-6 min-h-[500px]">
-                        <div className="flex items-center justify-between mb-8">
-                            <div>
-                                <h3 className="text-lg font-bold">Ready Truck Inventory</h3>
-                                <p className="text-xs text-zinc-500">Real-time status of trucks awaiting assignment</p>
-                            </div>
-                            <div className="flex gap-2">
-                                <button className="px-3 py-1.5 bg-neutral-800 text-[10px] rounded-lg border border-neutral-700 hover:text-indigo-400 transition-colors">Filters</button>
-                                <button className="px-3 py-1.5 bg-indigo-600 text-[10px] rounded-lg font-bold">Assign Trip</button>
-                            </div>
-                        </div>
-
-                        <div className="space-y-3">
-                            <ReadyTruckRow id="GJ-01-TA-8890" model="Tata Prima 4025" driver="Deepak Sharma" location="Ahmedabad Hub" lastTrip="2 days ago" />
-                            <ReadyTruckRow id="RJ-14-GH-4432" model="Ashok Leyland 3518" driver="Vikram Singh" location="Jaipur Yard" lastTrip="Today" />
-                            <ReadyTruckRow id="HR-38-XY-1209" model="BharatBenz 4223R" driver="Rajesh G." location="Gurgaon Depot" lastTrip="1 week ago" />
-                            <ReadyTruckRow id="MH-43-BE-7701" model="Mahindra Blazo X" driver="Amit P." location="Vashi" lastTrip="Yesterday" />
-                            <ReadyTruckRow id="KA-01-MJ-5500" model="Tata Signa 2823" driver="S. Murthy" location="Bangalore" lastTrip="3 days ago" />
-                        </div>
-                    </div>
-
-                    {/* Sidebar Column (40%) */}
-                    <div className="col-span-12 lg:col-span-4 space-y-6">
-                        {/* Comprehensive System Alerts */}
-                        <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6">
-                            <h4 className="font-bold text-sm mb-4 flex items-center gap-2">
-                                <Bell size={16} className="text-indigo-500" /> Critical Compliance
-                            </h4>
-                            <div className="space-y-4">
-                                <AlertItem type="PUC" vehicle="GJ-01-TA-8890" days={5} />
-                                <AlertItem type="License" person="Vikram Singh (Driver)" days={10} />
-                                <AlertItem type="Fitness" vehicle="HR-38-XY-1209" days={3} />
-                                <AlertItem type="Insurance" vehicle="MH-43-BE-7701" days={12} />
-                            </div>
-                        </div>
-
-                        {/* Maintenance Ledger Preview */}
-                        <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <h4 className="font-bold text-sm flex items-center gap-2">
-                                    <Wrench size={16} className="text-zinc-500" /> Recent Service
-                                </h4>
-                                <button className="text-[10px] text-indigo-400 font-bold hover:underline">View Ledger</button>
-                            </div>
-                            <div className="space-y-4">
-                                <ServiceItem vehicle="PB-10-XX-1122" work="Brake Pad Replacement" status="Completed" cost="₹4,200" />
-                                <ServiceItem vehicle="DL-01-G-9900" work="Engine Oil Change" status="Scheduled" cost="Est. ₹8,500" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    )
-}
-
-export default MainDashboard
-
-function StatCard({ title, value, change, icon, color }: any) {
-  const colorMap: any = { indigo: 'text-indigo-400', amber: 'text-amber-400' };
-  return (
-    <div className="bg-neutral-900 border border-neutral-800 p-5 rounded-2xl hover:border-neutral-700 transition-all group">
-      <div className="flex justify-between items-start mb-4">
-        <div className={`p-2 bg-neutral-800 rounded-xl ${colorMap[color] || 'text-indigo-400'} group-hover:scale-110 transition-transform`}>{icon}</div>
-        <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${change.startsWith('+') ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'}`}>{change}</span>
+      <div className="min-h-screen bg-[#020202] flex flex-col items-center justify-center space-y-4">
+        <Activity className="text-indigo-500 animate-pulse" size={48} />
+        <p className="text-indigo-500 font-black tracking-[0.3em] uppercase text-[10px]">
+          Syncing AK ERP Systems...
+        </p>
       </div>
-      <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1 font-bold">{title}</p>
-      <p className="text-2xl font-bold text-white font-mono">{value}</p>
+    );
+  }
+
+  // --- UI CAP LOGIC (Strictly max 5 items for visual balance) ---
+  const limitedAlerts = coreData.allAlerts.slice(0, 5);
+  const limitedRecent = coreData.recent.slice(0, 5);
+
+  return (
+    <div className="min-h-screen bg-[#020202] text-zinc-400 p-4 lg:p-8 space-y-8 pb-24 font-sans selection:bg-indigo-500/30">
+
+      {/* 1. EXECUTIVE HEADER */}
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-neutral-900/40 p-6 rounded-[32px] border border-white/5 backdrop-blur-xl shadow-2xl">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-600/20">
+            <TrendingUp size={24} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-black text-white uppercase tracking-tighter">
+              {coreData.companyName}
+            </h1>
+            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+              GST: {coreData.gst} • <span className="text-emerald-500 flex items-center gap-1"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping" /> ONLINE</span>
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-6">
+          <div className="text-right hidden sm:block border-r border-neutral-800 pr-6">
+            <p className="text-[10px] font-black text-zinc-600 uppercase">Today's Freight</p>
+            <p className="text-xl font-black text-white tracking-tighter">₹{coreData.todayVolume}</p>
+          </div>
+          <button className="p-3 bg-neutral-950 border border-neutral-800 rounded-2xl text-zinc-400 hover:text-indigo-500 transition-all relative">
+            <Bell size={20} />
+            <span className="absolute top-3.5 right-3.5 w-2 h-2 bg-indigo-500 rounded-full border-2 border-neutral-950" />
+          </button>
+        </div>
+      </header>
+
+      {/* 2. MONTHLY P&L SNAPSHOT */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <PLCard title="Monthly Revenue" value={`₹${coreData.monthlyRevK}`} icon={<TrendingUp size={18} />} color="indigo" sub="Performance" />
+        <PLCard title="Est. Monthly Profit" value={`₹${coreData.monthlyProfitK}`} icon={<Activity size={18} />} color="emerald" sub="Earnings" />
+        <PLCard title="Balance Hold" value={`₹${coreData.holdL}L`} icon={<AlertCircle size={18} />} color="red" sub="Risk Management" />
+      </div>
+
+      {/* 3. YEARLY GROWTH TREND GRAPH */}
+      <div className="lg:col-span-12 bg-neutral-900 border border-neutral-800 rounded-[48px] p-10 shadow-2xl relative overflow-hidden group">
+        <div className="flex items-center justify-between mb-10 relative z-10">
+          <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-3">
+            <BarChart3 size={20} className="text-indigo-500" /> Revenue Growth Cycle
+          </h3>
+          <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest bg-black/40 px-3 py-1 rounded-full border border-white/5">FY 2025-26</span>
+        </div>
+
+        <div className="h-64 w-full bg-black/20 rounded-[32px] border border-white/5 flex items-end p-8 gap-4 relative z-10">
+          {(() => {
+            const maxRev = Math.max(...(coreData.growth.map((d: any) => d.revenue) || []), 1000);
+            return Array.from({ length: 12 }).map((_, i) => {
+              const monthData = coreData.growth.find((d: any) => d._id === i + 1);
+              const height = monthData ? (monthData.revenue / maxRev) * 90 + 5 : 2;
+              return (
+                <div key={i} className="flex-1 flex flex-col items-center gap-4 group/bar h-full justify-end">
+                  <div className="relative w-full flex items-end justify-center h-full">
+                    <motion.div
+                      initial={{ height: 0 }}
+                      animate={{ height: `${height}%` }}
+                      transition={{ type: "spring", stiffness: 100, damping: 15, delay: i * 0.05 }}
+                      className="w-full max-w-[45px] bg-indigo-500/20 group-hover/bar:bg-indigo-500/60 rounded-t-2xl transition-all relative"
+                    >
+                      {monthData && (
+                        <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[9px] font-black px-3 py-1.5 rounded-xl opacity-0 group-hover/bar:opacity-100 transition-all shadow-xl whitespace-nowrap z-20 pointer-events-none">
+                          ₹{(monthData.revenue / 1000).toFixed(1)}k
+                        </div>
+                      )}
+                    </motion.div>
+                  </div>
+                  <span className="text-[9px] font-black text-zinc-700 uppercase tracking-tighter">
+                    {new Date(0, i).toLocaleString('en', { month: 'short' })}
+                  </span>
+                </div>
+              )
+            });
+          })()}
+        </div>
+        <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/5 blur-[100px] rounded-full -mr-40 -mt-40 pointer-events-none" />
+      </div>
+
+      {/* 4. FLEET LOG & COMPLIANCE */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* Fleet Movement Log */}
+        <div className="lg:col-span-7 space-y-4">
+          <div className="flex items-center justify-between px-2">
+            <h3 className="text-[11px] font-black text-white uppercase tracking-[0.3em]">Fleet Movement Log</h3>
+            {coreData.recent.length > 5 && (
+              <button 
+                onClick={() => navigate('/admin-dashboard/trips')}
+                className="flex items-center gap-2 text-[9px] font-black text-indigo-400 uppercase tracking-widest hover:underline group"
+              >
+                View All <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            )}
+          </div>
+          <div className="space-y-3">
+            {limitedRecent.map((trip: any) => (
+              <MovementRow
+                key={trip._id}
+                truck={trip.truckId?.truckNumber}
+                tripId={trip._id}
+                party={trip.partnerCompanyId?.partyName}
+                origin={trip.origin}
+                destination={trip.destination}
+                status={trip.status}
+                balance={trip.toalBalanceAmount}
+                navigate={navigate}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Compliance Section */}
+        <div className="lg:col-span-5 bg-neutral-900 border border-neutral-800 rounded-[40px] p-8 shadow-2xl flex flex-col h-full">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+              <FileWarning size={18} className="text-amber-500" /> Compliance Criticals
+            </h3>
+            {coreData.allAlerts.length > 5 && (
+              <button 
+                onClick={() => navigate('/admin-dashboard/trucks')}
+                className="text-[9px] font-black text-zinc-500 uppercase hover:text-indigo-400 transition-colors"
+              >
+                Show All
+              </button>
+            )}
+          </div>
+          
+          <div className="space-y-4 flex-1">
+            {limitedAlerts.length > 0 ? (
+              limitedAlerts.map((alert: any, idx: number) => (
+                <AlertItem 
+                   key={`${alert.truck}-${alert.type}-${idx}`} 
+                   type={alert.type} 
+                   target={alert.truck} 
+                   date={alert.date} 
+                   elementId={alert.vehicleId}
+                   navigate={navigate}
+                />
+              ))
+            ) : (
+              <div className="text-center py-12 border border-dashed border-neutral-800 rounded-3xl opacity-40">
+                <ShieldCheck className="mx-auto mb-3" size={32} />
+                <p className="text-[10px] font-black uppercase tracking-widest">Registry Compliant</p>
+              </div>
+            )}
+          </div>
+          
+          {coreData.allAlerts.length > 5 && (
+            <div className="mt-6 pt-6 border-t border-neutral-800 text-center">
+              <p className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">
+                +{coreData.allAlerts.length - 5} More individual expiries pending
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- SUBSIDIARY UI COMPONENTS ---
+
+function PLCard({ title, value, icon, color, sub }: any) {
+  const colorMap: any = {
+    indigo: 'from-indigo-500/20 text-indigo-400 border-indigo-400/20',
+    emerald: 'from-emerald-500/20 text-emerald-400 border-emerald-400/20',
+    red: 'from-red-500/20 text-red-400 border-red-500/20',
+  };
+  return (
+    <div className={`bg-gradient-to-br ${colorMap[color]} bg-neutral-900 border p-8 rounded-[40px] shadow-xl hover:scale-[1.02] transition-all cursor-default`}>
+      <div className="flex items-center gap-3 mb-4 opacity-70">
+        {icon} <span className="text-[10px] font-black uppercase tracking-widest">{sub}</span>
+      </div>
+      <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">{title}</p>
+      <h4 className="text-4xl font-black text-white tracking-tighter">{value}</h4>
     </div>
   );
 }
 
-function ReadyTruckRow({ id, model, driver, location, lastTrip }: any) {
+function MovementRow({ truck, tripId, party, origin, destination, status, balance, navigate }: any) {
   return (
-    <div className="flex items-center justify-between p-4 bg-neutral-900/30 border border-neutral-800 rounded-2xl hover:bg-neutral-800/40 transition-all group">
-      <div className="flex items-center gap-4">
-        <div className="w-10 h-10 bg-neutral-800 rounded-xl flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500/10 transition-colors">
-          <Truck size={18} />
+    <button 
+      onClick={() => navigate(`/admin-dashboard/trips/${tripId}`)} 
+      className="w-full text-left group flex flex-col sm:flex-row items-center justify-between p-5 bg-neutral-900 border border-neutral-800 rounded-[28px] hover:border-indigo-500/30 transition-all gap-4"
+    >
+      <div className="flex items-center gap-4 w-full sm:w-auto">
+        <div className="w-12 h-12 bg-black/40 rounded-2xl flex items-center justify-center text-indigo-500 border border-white/5 group-hover:scale-110 transition-transform shadow-lg">
+          <Truck size={22} />
         </div>
         <div>
-          <h4 className="text-sm font-bold text-zinc-100">{id}</h4>
-          <p className="text-[10px] text-zinc-500">{model} • <span className="text-zinc-400 italic">Ready</span></p>
+          <h4 className="text-sm font-black text-white uppercase tracking-tighter leading-none mb-1.5">{truck || 'N/A'}</h4>
+          <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{party || 'Unknown Party'}</p>
         </div>
       </div>
-      <div className="text-center px-4">
-        <p className="text-xs font-medium text-zinc-300">{driver}</p>
-        <p className="text-[10px] text-zinc-500">{location}</p>
+      <div className="flex items-center gap-6 px-6 border-x border-neutral-800/50 hidden lg:flex">
+        <div className="text-center">
+          <p className="text-[8px] font-black text-zinc-600 uppercase mb-1 tracking-widest">Route</p>
+          <p className="text-[11px] font-black text-zinc-300 uppercase tracking-tight">{origin} ➔ {destination}</p>
+        </div>
       </div>
-      <div className="text-right">
-        <p className="text-[10px] text-zinc-600 uppercase font-bold tracking-tighter mb-1">Last Trip</p>
-        <span className="text-xs text-indigo-400 font-medium">{lastTrip}</span>
+      <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
+        <div className="text-right">
+          <p className="text-[8px] font-black text-zinc-600 uppercase mb-1 tracking-widest">Pending</p>
+          <p className={`text-xs font-mono font-bold ${balance > 0 ? 'text-red-500' : 'text-emerald-500'}`}>₹{(balance || 0).toLocaleString()}</p>
+        </div>
+        <div className={`px-3 py-1.5 rounded-xl border text-[9px] font-black uppercase tracking-tighter
+          ${status === 'DELIVERED' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20 animate-pulse'}`}>
+          {status}
+        </div>
       </div>
-    </div>
+    </button>
   );
 }
 
-function AlertItem({ type, vehicle, person, days }: any) {
+function AlertItem({ type, target, date, elementId, navigate }: any) {
+  const daysLeft = Math.ceil((new Date(date).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
+  const isUrgent = daysLeft <= 5;
   return (
-    <div className="flex items-center gap-4 p-3 bg-zinc-950/50 border border-neutral-800 rounded-xl group hover:border-amber-500/30 transition-all">
-      <div className={`p-2 rounded-lg ${days <= 5 ? 'bg-red-500/10 text-red-500' : 'bg-amber-500/10 text-amber-500'}`}>
-        <AlertTriangle size={14} />
+    <button 
+      onClick={() => navigate(`/admin-dashboard/truck/edit/${elementId}`)} 
+      className={`w-full text-left flex items-center justify-between p-5 bg-black/40 border border-white/5 rounded-[24px] group transition-all hover:bg-black/60 ${isUrgent ? 'border-l-4 border-l-red-500' : ''}`}
+    >
+      <div className="flex items-center gap-4">
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isUrgent ? 'bg-red-500/10 text-red-500' : 'bg-amber-500/10 text-amber-500'} border border-white/5 shadow-inner`}>
+          <ClipboardList size={18} />
+        </div>
+        <div>
+          <p className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">{type} EXPIRED</p>
+          <p className="text-[11px] font-black text-zinc-500 uppercase">{target}</p>
+        </div>
       </div>
-      <div className="flex-1">
-        <p className="text-xs font-bold text-zinc-200">{type} Expiry</p>
-        <p className="text-[10px] text-zinc-500">{vehicle || person}</p>
+      <div className="text-right leading-none">
+        <p className={`text-lg font-black tracking-tighter ${isUrgent ? 'text-red-500 animate-pulse' : 'text-amber-500'}`}>{daysLeft}D</p>
+        <p className="text-[8px] font-black text-zinc-700 uppercase tracking-widest">Left</p>
       </div>
-      <div className="text-right">
-        <p className={`text-xs font-bold ${days <= 5 ? 'text-red-500' : 'text-amber-500'}`}>{days} Days</p>
-        <p className="text-[9px] text-zinc-600 uppercase">Remains</p>
-      </div>
-    </div>
+    </button>
   );
 }
 
-function ServiceItem({ vehicle, work, status, cost }: any) {
-  return (
-    <div className="flex items-center justify-between p-3 border-l-2 border-indigo-500 bg-neutral-800/20 rounded-r-xl">
-      <div>
-        <h5 className="text-xs font-bold text-zinc-200">{vehicle}</h5>
-        <p className="text-[10px] text-zinc-500">{work}</p>
-      </div>
-      <div className="text-right">
-        <p className="text-xs font-mono font-bold text-emerald-500">{cost}</p>
-        <p className="text-[9px] text-zinc-600 uppercase font-bold tracking-widest">{status}</p>
-      </div>
-    </div>
-  );
-}
+export default MainDashboard;
