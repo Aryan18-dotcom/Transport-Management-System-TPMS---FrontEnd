@@ -71,7 +71,7 @@ const ViewTrips = () => {
                             <TripCard 
                                 key={trip._id} 
                                 trip={trip} 
-                                onClick={() => navigate(`/admin-dashboard/trips/${trip._id}`)}
+                                onClick={() => navigate(`/admin-dashboard/trip/${trip._id}`)}
                             />
                         ))
                     )}

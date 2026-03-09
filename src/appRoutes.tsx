@@ -42,6 +42,16 @@ import ViewTrips from "./features/Trips/pages/ViewTrips.tsx"
 import ViewTripsDetails from "./features/Trips/components/ViewTripsDetails.tsx"
 import ManageTrips from "./features/Trips/pages/ManageTrips.tsx"
 import EditTripsDetails from "./features/Trips/components/EditTripsDetails.tsx"
+import GenerateBill from "./features/Bills/pages/GenerateBill.tsx"
+import AllBills from "./features/Bills/pages/AllBills.tsx"
+import BillDetails from "./features/Bills/component/BillDetails.tsx"
+import UpdateBillDetails from "./features/Bills/component/UpdateBillDetails.tsx"
+import ManageBills from "./features/Bills/pages/ManageBills.tsx"
+import { InvoiceProvider } from "./features/Invoices/InvoiceContext.tsx"
+import CreateInvoice from "./features/Invoices/pages/CreateInvoice.tsx"
+import { BillProvider } from "./features/Bills/billContext.tsx"
+import InvoiceDetails from "./features/Invoices/components/InvoiceDetails.tsx"
+import AllInvoices from "./features/Invoices/pages/AllInvoices.tsx"
 
 export const router = createBrowserRouter([
     {
@@ -187,7 +197,7 @@ export const router = createBrowserRouter([
                 element: <TripsProvider><ViewTrips /></TripsProvider>
             },
             {
-                path: 'trips/:tripId',
+                path: 'trip/:tripId',
                 element: <TripsProvider><ViewTripsDetails /></TripsProvider>
             },
             {
@@ -201,7 +211,36 @@ export const router = createBrowserRouter([
             // BILLS RELATED FUNCTIONS
             {
                 path:'bill/new',
-                element: <h1>NEw BIll</h1>
+                element: <BillProvider><TripsProvider><PartnerProvider><TripsProvider><GenerateBill /></TripsProvider></PartnerProvider></TripsProvider></BillProvider>
+            },
+            {
+                path:'bill/all',
+                element: <BillProvider><AllBills /></BillProvider>
+            },
+            {
+                path:'bill/:billId',
+                element: <BillProvider><BillDetails /></BillProvider>
+            },
+            {
+                path:'bill/manage',
+                element: <BillProvider><ManageBills /></BillProvider>
+            },
+            {
+                path:'bill/manage/:billId',
+                element: <BillProvider><TripsProvider><PartnerProvider><TripsProvider><UpdateBillDetails /></TripsProvider></PartnerProvider></TripsProvider></BillProvider>
+            },
+            // INVOICE REALTED FUNCTIONS
+            {
+                path: 'invoice/new',
+                element: <InvoiceProvider><BillProvider><CreateInvoice /></BillProvider></InvoiceProvider>
+            },
+            {
+                path: 'invoice/all',
+                element: <InvoiceProvider><BillProvider><AllInvoices /></BillProvider></InvoiceProvider>
+            },
+            {
+                path: 'invoice/:invoiceId',
+                element: <InvoiceProvider><InvoiceDetails /></InvoiceProvider>
             },
         ]
     },

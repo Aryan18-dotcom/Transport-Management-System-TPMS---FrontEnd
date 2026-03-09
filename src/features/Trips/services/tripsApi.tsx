@@ -67,5 +67,14 @@ export const tripsApi = {
             credentials: "include"
         });
         return res;
+    },
+
+    getTripsByCompanyId: async (partnerCompanyId: string) => {
+        const res = await fetch(`${BASE_URL}/trips/partner-company/${partnerCompanyId}`, {
+            method: "GET",
+            credentials: "include"
+        })
+
+        return res
     }
 };

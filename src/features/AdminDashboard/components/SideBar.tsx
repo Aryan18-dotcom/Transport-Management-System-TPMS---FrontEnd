@@ -139,15 +139,26 @@ const SideBar = ({ activeMenu, setActiveMenu }: { activeMenu: string | null; set
 
         <CollapsibleMenu
           icon={<Receipt size={18} />}
-          title="Bills & Invoices"
+          title="Bills"
           isOpen={openSubMenu === "Bills"}
           onToggle={() => handleToggle("Bills")}
           currentPath={location.pathname}
           items={[
-            { title: "Generate Invoice", path: "/admin-dashboard/bill/new", icon: <Plus size={14} /> },
-            { title: "Due Payments", path: "/admin-dashboard/bill/due", icon: <Wallet size={14} /> },
-            { title: "Success Payments", path: "/admin-dashboard/bill/paid", icon: <CheckCircle2 size={14} /> },
-            { title: "All Details", path: "/admin-dashboard/bill/all", icon: <FileText size={14} /> },
+            { title: "Generate Bill", path: "/admin-dashboard/bill/new", icon: <Plus size={14} /> },
+            { title: "All Bills", path: "/admin-dashboard/bill/all", icon: <FileText size={14} /> },
+            { title: "Manage Bills", path: "/admin-dashboard/bill/manage", icon: <Wallet size={14} /> },
+          ]}
+        />
+
+        <CollapsibleMenu
+          icon={<Receipt size={18} />}
+          title="Invoices"
+          isOpen={openSubMenu === "Invoices"}
+          onToggle={() => handleToggle("Invoices")}
+          currentPath={location.pathname}
+          items={[
+            { title: "Generate Invoices", path: "/admin-dashboard/invoice/new", icon: <Plus size={14} /> },
+            { title: "All Details", path: "/admin-dashboard/invoice/all", icon: <FileText size={14} /> },
           ]}
         />
 
@@ -197,7 +208,12 @@ function CollapsibleMenu({ icon, title, items, isOpen, onToggle, currentPath }: 
               const isFleetAssignments = item.title === "Fleet Assignments" && currentPath.includes("/driver/manage-assignment/");
               const isPartnerView = item.title === "View" && currentPath.includes("/partner/") && !currentPath.includes("/manage") && !currentPath.includes("/add");
               const isPartnerManage = item.title === "Manage" && currentPath.includes("/partner/manage");
-              
+              const isAllBillsView = item.title === "All Bills" && (currentPath.includes("/bill/all") || (currentPath.includes("/admin-dashboard/bill/") && !currentPath.includes("/new") && !currentPath.includes("/manage")));
+              const isManageBillsView = item.title === "Manage Bills" && currentPath.includes("/admin-dashboard/bill/manage");
+              const isGenerateBillView = item.title === "Generate Bill" && currentPath.includes("/admin-dashboard/bill/new");
+              const isGenerateInvoiceView = item.title === "Generate Invoices" && currentPath.includes("/admin-dashboard/invoice/new");
+              const isAllInvoicesView = item.title === "All Details" && (currentPath.includes("/admin-dashboard/invoice/all") || (currentPath.includes("/admin-dashboard/invoice/") && !currentPath.includes("/new")));
+
 
               // 4. General Manage/Edit logic (isDynamic)
               const isDynamicManage = item.isDynamic && currentPath.includes(item.path);
@@ -215,7 +231,12 @@ function CollapsibleMenu({ icon, title, items, isOpen, onToggle, currentPath }: 
                 isDynamicManage ||
                 isTruckManage ||
                 isPartnerView ||
-                isPartnerManage;
+                isPartnerManage ||
+                isAllBillsView ||
+                isManageBillsView ||
+                isGenerateBillView ||
+                isGenerateInvoiceView ||
+                isAllInvoicesView;
 
               return (
                 <Link

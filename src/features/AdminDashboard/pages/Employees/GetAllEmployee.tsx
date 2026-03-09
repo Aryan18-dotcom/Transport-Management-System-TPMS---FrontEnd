@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react"; // Added useState and useM
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Mail, Phone, ChevronRight, Search, Plus, UserX } from "lucide-react";
-import { useAdmin } from "../../hooks/AdminHook";
+import { useAdmin } from "../../hooks/adminHook";
 
 export default function ManageEmployee() {
   const navigate = useNavigate();
@@ -73,7 +73,7 @@ export default function ManageEmployee() {
               className="group relative bg-neutral-900 border border-neutral-800 rounded-[24px] p-6 cursor-pointer hover:border-indigo-500/50 hover:bg-neutral-800/50 transition-all shadow-xl"
             >
               {/* Status Dot */}
-              <div className={`absolute top-4 right-4 w-2 h-2 rounded-full ${emp.isActive ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-zinc-600'}`} />
+              <div className={`absolute top-4 right-4 w-2 h-2 rounded-full ${emp.isActive ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-red-600'}`} />
               
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className="w-16 h-16 bg-neutral-800 group-hover:bg-indigo-600 rounded-2xl flex items-center justify-center text-xl font-bold text-white transition-colors duration-300">

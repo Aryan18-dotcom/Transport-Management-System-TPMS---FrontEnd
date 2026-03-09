@@ -40,6 +40,10 @@ export const useTrips = () => {
         return await tripsApi.deleteTripById(tripId)
     }
 
+    const getTripForThePartnerCompany = async (partnerCompanyId: string) => {
+        return await tripsApi.getTripsByCompanyId(partnerCompanyId)
+    }
+
     return {
         trips,
         tripsLoading,
@@ -49,6 +53,7 @@ export const useTrips = () => {
         handleUpdatePayment,
         handleUpdateDetails,
         getTripDetails,
-        deleteTripDetsById
+        deleteTripDetsById,
+        getTripForThePartnerCompany
     };
 };

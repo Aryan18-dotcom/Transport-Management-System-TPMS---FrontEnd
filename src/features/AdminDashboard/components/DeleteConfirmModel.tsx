@@ -29,7 +29,7 @@ export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, title, 
                 <AlertTriangle size={32} />
               </div>
               <h3 className="text-xl font-bold text-white">Critical Action</h3>
-              <p className="text-zinc-400 text-sm">Are you sure you want to delete <span className="text-white font-bold">{title}</span>? This action is permanent and will remove all associated trip logs.</p>
+              <p className="text-zinc-400 text-sm">Are you sure you want to delete <span className="text-white font-bold">{title}</span>? This action is permanent and will remove all associated logs.</p>
               
               <div className="flex gap-3 w-full pt-4">
                 <button 
