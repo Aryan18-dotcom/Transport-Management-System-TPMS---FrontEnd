@@ -2,7 +2,6 @@ import { createBrowserRouter } from "react-router"
 import Login from "./features/auth/pages/Login.tsx"
 import Register from "./features/auth/pages/Register.tsx"
 import Dashboard from "./features/AdminDashboard/pages/Dashboard.tsx"
-import ProtectedRoute from "./features/AdminDashboard/services/ProtectedRoute.tsx"
 import CreateEmployee from "./features/AdminDashboard/pages/Employees/CreateEmployee.tsx"
 import MainDashboard from "./features/AdminDashboard/components/MainDahboard.tsx"
 import GetAllEmployee from "./features/AdminDashboard/pages/Employees/GetAllEmployee.tsx"
@@ -52,6 +51,14 @@ import CreateInvoice from "./features/Invoices/pages/CreateInvoice.tsx"
 import { BillProvider } from "./features/Bills/billContext.tsx"
 import InvoiceDetails from "./features/Invoices/components/InvoiceDetails.tsx"
 import AllInvoices from "./features/Invoices/pages/AllInvoices.tsx"
+import EmployeeDashboard from "./features/EmployeeDashboard/pages/EmployeeDashboard.tsx"
+import ProtectedRoute from "./features/auth/services/ProtectedRoute.tsx"
+import ProtectedRouteForAdminProps from "./features/auth/services/ProtectedRouteForAdmin.tsx"
+import ProtectedRouteForEmployeeProps from "./features/auth/services/ProtectedRouteForEmployee.tsx"
+import DashboardContent from "./features/EmployeeDashboard/components/DashboardContent.tsx"
+import { EmployeeProvider } from "./features/EmployeeDashboard/employeeContext.tsx"
+import EmployeeSettingsPage from "./features/EmployeeDashboard/pages/EmpoyeeSettingsPage.tsx"
+import AdminSettingsPage from "./features/AdminDashboard/pages/AdminSettingsPage.tsx"
 
 export const router = createBrowserRouter([
     {
@@ -68,7 +75,7 @@ export const router = createBrowserRouter([
     },
     {
         path: "/admin-dashboard",
-        element: (<ProtectedRoute><Dashboard /></ProtectedRoute>), children: [
+        element: (<ProtectedRouteForAdminProps><ProtectedRoute><Dashboard /></ProtectedRoute></ProtectedRouteForAdminProps>), children: [
             {
                 index: true,
                 element: <TrucksProvider><TripsProvider><MainDashboard /></TripsProvider></TrucksProvider>
@@ -210,23 +217,23 @@ export const router = createBrowserRouter([
             },
             // BILLS RELATED FUNCTIONS
             {
-                path:'bill/new',
+                path: 'bill/new',
                 element: <BillProvider><TripsProvider><PartnerProvider><TripsProvider><GenerateBill /></TripsProvider></PartnerProvider></TripsProvider></BillProvider>
             },
             {
-                path:'bill/all',
+                path: 'bill/all',
                 element: <BillProvider><AllBills /></BillProvider>
             },
             {
-                path:'bill/:billId',
+                path: 'bill/:billId',
                 element: <BillProvider><BillDetails /></BillProvider>
             },
             {
-                path:'bill/manage',
+                path: 'bill/manage',
                 element: <BillProvider><ManageBills /></BillProvider>
             },
             {
-                path:'bill/manage/:billId',
+                path: 'bill/manage/:billId',
                 element: <BillProvider><TripsProvider><PartnerProvider><TripsProvider><UpdateBillDetails /></TripsProvider></PartnerProvider></TripsProvider></BillProvider>
             },
             // INVOICE REALTED FUNCTIONS
@@ -242,11 +249,140 @@ export const router = createBrowserRouter([
                 path: 'invoice/:invoiceId',
                 element: <InvoiceProvider><InvoiceDetails /></InvoiceProvider>
             },
+            // SETTINGS REALTED FUNTIONS
+            {
+                path: 'settings',
+                element: <AdminSettingsPage />
+            }
         ]
     },
-    
+
     {
         path: "/employee-dashboard",
-        element: <ProtectedRoute><h1>Employee Dashboard</h1></ProtectedRoute>
+        element: (<ProtectedRouteForEmployeeProps><EmployeeProvider><ProtectedRoute><EmployeeDashboard /></ProtectedRoute></EmployeeProvider></ProtectedRouteForEmployeeProps>), children: [
+            {
+                index: true,
+                element: <DashboardContent />
+            },
+            // TRUCK RELATED FUNCTIONS 🚚
+            {
+                path: "truck/add",
+                element: <TrucksProvider><AddTruck /></TrucksProvider>
+            },
+            {
+                path: "truck/all",
+                element: <TrucksProvider><AllTrucks /></TrucksProvider>
+            },
+            {
+                path: "truck/:truckId",
+                element: <TrucksProvider><TruckDetails /></TrucksProvider>
+            },
+            {
+                path: "truck/edit",
+                element: <TrucksProvider><ManageAllTrucks /></TrucksProvider>
+            },
+            {
+                path: "truck/edit/:truckId",
+                element: <TrucksProvider><DriversProvider><EditTruckDetail /></DriversProvider></TrucksProvider>
+            },
+
+            // DRIVERS RELATED FUNCTIONS 👳‍♂️
+            {
+                path: "driver/add",
+                element: <DriversProvider><AddDriver /></DriversProvider>
+            },
+            {
+                path: "driver/all",
+                element: <DriversProvider><DriversDirectory /></DriversProvider>
+            },
+            {
+                path: "driver/details/:driverId",
+                element: <DriversProvider><DriverDetails /></DriversProvider>
+            },
+            {
+                path: "driver/edit/",
+                element: <DriversProvider><PersonnelFiles /></DriversProvider>
+            },
+            {
+                path: "driver/edit/:driverId",
+                element: <DriversProvider><UpdateDriversDetails /></DriversProvider>
+            },
+            {
+                path: "driver/assignments",
+                element: <DriversProvider><FleetAssignment /></DriversProvider>
+            },
+            {
+                path: "driver/manage-assignment/:driverId",
+                element: <DriversProvider><TrucksProvider><ManageAssignment /></TrucksProvider></DriversProvider>
+            },
+            // MAINTENANCE RELATED FUNCTIONS ⛑
+            {
+                path: 'truck/maintenance',
+                element: <MaintenanceProvider><TrucksProvider><Maintenance /></TrucksProvider></MaintenanceProvider>
+            },
+            {
+                path: 'truck/maintenance/add',
+                element: <MaintenanceProvider><TrucksProvider><AddMaintenance /></TrucksProvider></MaintenanceProvider>
+            },
+            {
+                path: 'truck/maintenance/:recordId',
+                element: <MaintenanceProvider><TrucksProvider><MaintenanceDetails /></TrucksProvider></MaintenanceProvider>
+            },
+            {
+                path: 'truck/maintenance/manage',
+                element: <MaintenanceProvider><TrucksProvider><ManageMaintenance /></TrucksProvider></MaintenanceProvider>
+            },
+            {
+                path: 'truck/maintenance/manage/:recordId',
+                element: <MaintenanceProvider><TrucksProvider><EditMaintenance /></TrucksProvider></MaintenanceProvider>
+            },
+            // PARTNERS REALTED FUNCTIONS
+            {
+                path: 'partner/add',
+                element: <PartnerProvider><AddPartner /></PartnerProvider>
+            },
+            {
+                path: 'partner/all',
+                element: <PartnerProvider><AllPartners /></PartnerProvider>
+            },
+            {
+                path: 'partner/:partnerId',
+                element: <PartnerProvider><PartnerDetails /></PartnerProvider>
+            },
+            {
+                path: 'partner/manage',
+                element: <PartnerProvider><ManagePartners /></PartnerProvider>
+            },
+            {
+                path: 'partner/manage/:partnerId',
+                element: <PartnerProvider><EditPartnerDetails /></PartnerProvider>
+            },
+            // TRIPS REALTED FUNCTIONS
+            {
+                path: 'trips/add',
+                element: <TripsProvider><TrucksProvider><DriversProvider><PartnerProvider><AddTrip /></PartnerProvider></DriversProvider></TrucksProvider></TripsProvider>
+            },
+            {
+                path: 'trips/all',
+                element: <TripsProvider><ViewTrips /></TripsProvider>
+            },
+            {
+                path: 'trip/:tripId',
+                element: <TripsProvider><ViewTripsDetails /></TripsProvider>
+            },
+            {
+                path: 'trips/manage',
+                element: <TripsProvider><ManageTrips /></TripsProvider>
+            },
+            {
+                path: 'trips/manage/:tripId',
+                element: <TripsProvider><EditTripsDetails /></TripsProvider>
+            },
+            // SETTINGS REALTED FUNTIONS
+            {
+                path: 'settings',
+                element: <EmployeeSettingsPage />
+            }
+        ]
     },
 ])

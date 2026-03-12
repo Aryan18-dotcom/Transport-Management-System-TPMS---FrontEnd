@@ -49,9 +49,14 @@ export default function Login() {
       toast.error(result.message || "Invalid credentials");
       return;
     }
-    
     toast.success("Welcome back!");
-    navigate("/admin-dashboard");
+    if (result.user) {
+      if (result.user.role === "EMPLOYEE") {
+        navigate("/employee-dashboard");
+      } else if (result.user.role === "COMPANY_ADMIN") {
+        navigate("/admin-dashboard");
+      }
+    }
   };
 
   return (

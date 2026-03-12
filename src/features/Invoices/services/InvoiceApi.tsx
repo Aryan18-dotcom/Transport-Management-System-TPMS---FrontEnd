@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000/api/invoice";
+const BASE_URL = `${import.meta.env.VITE_BASE_URL}/invoice`;
 
 export const invoiceApi = {
     // 1. Generate Automated PNG Invoice

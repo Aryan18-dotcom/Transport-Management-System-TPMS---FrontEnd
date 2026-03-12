@@ -35,6 +35,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     const checkForAuth = async () => {
       const data = await getCurrentUser();
+      console.log(data);
+      
       setUser(data.user)
       setLoading(false);
     }

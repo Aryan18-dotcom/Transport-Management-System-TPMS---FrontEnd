@@ -162,7 +162,16 @@ const SideBar = ({ activeMenu, setActiveMenu }: { activeMenu: string | null; set
           ]}
         />
 
-        <SidebarLink icon={<Settings size={18} />} title="Settings" isActive={location.pathname === "/settings"} onClick={() => { setOpenSubMenu(null) }} />
+        <SidebarLink
+          icon={<LayoutDashboard size={18} />}
+          title="Settings"
+          isActive={activeMenu === "Settings" || location.pathname.includes("settings")}
+          onClick={() => {
+            setActiveMenu("Settings");
+            setOpenSubMenu(null);
+            navigate('settings')
+          }}
+        />
       </nav>
 
       <div className="p-4 border-t border-neutral-800">

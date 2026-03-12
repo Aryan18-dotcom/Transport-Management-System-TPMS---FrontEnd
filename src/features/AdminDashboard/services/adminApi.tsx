@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000/api/admin";
+const BASE_URL: string =  `${import.meta.env.VITE_BASE_URL}/admin`;
 
 export const adminServices = {
   // 🔥 CREATE EMPLOYEE
@@ -29,7 +29,7 @@ export const adminServices = {
       body: JSON.stringify({ setIsActive }),
       credentials: "include",
     });
-    
+
     return await res;
   },
 
@@ -69,5 +69,35 @@ export const adminServices = {
       credentials: "include",
     });
     return await res.json();
-  }
+  },
+
+  updateCompanyData: async (data: any) => {
+    const res = await fetch(`${BASE_URL}/update-company`, {
+      method: "PUT", // Matches the Router's PUT method
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(data)
+    });
+    return await res.json();
+  },
+
+  updateProfileDetails: async (data: any) => { // Added missing 'data' parameter
+    const res = await fetch(`${BASE_URL}/update-profile`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(data)
+    });
+    return await res.json();
+  },
+
+  changeAdminPassword: async (passwords: any) => {
+    const res = await fetch(`${BASE_URL}/change-password`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(passwords)
+    });
+    return await res.json();
+}
 };

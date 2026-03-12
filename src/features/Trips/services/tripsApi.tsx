@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000/api/notery";
+const BASE_URL = `${import.meta.env.VITE_BASE_URL}/notery`;
 
 export const tripsApi = {
     // 1. Create Trip with POD upload

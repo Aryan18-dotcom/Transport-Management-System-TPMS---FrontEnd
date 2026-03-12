@@ -55,6 +55,8 @@ export const useAuth = () => {
       }
 
       setUser(data.user);
+      console.log(data.user);
+      
 
       return {
         success: true,
