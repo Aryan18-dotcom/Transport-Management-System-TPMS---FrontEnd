@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth.js";
 import { LogIn, ArrowRight, Activity, Globe, Box } from "lucide-react";
+import type { LoginResponse } from "../../../types/auth.js";
 
 // --- Interfaces ---
 
@@ -44,7 +45,7 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    const result = await handleLogin(formData);
+    const result = await handleLogin(formData) as LoginResponse;
     if (!result.success) {
       toast.error(result.message || "Invalid credentials");
       return;

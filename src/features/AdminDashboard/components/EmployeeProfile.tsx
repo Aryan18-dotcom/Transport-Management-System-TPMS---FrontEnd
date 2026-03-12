@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Shield, ArrowLeft, Mail, Phone, Calendar, BadgeCheck, ArrowUpRightIcon, ArrowUpRight } from "lucide-react";
-import { useAdmin } from "../hooks/AdminHook";
+import { useAdmin } from "../hooks/adminHook";
 
 export default function EmployeeProfile() {
   const { employeeId } = useParams();

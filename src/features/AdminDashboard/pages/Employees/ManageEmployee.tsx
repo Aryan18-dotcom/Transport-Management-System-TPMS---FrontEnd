@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { User, Mail, Phone, ChevronRight, Search, Plus, UserX } from "lucide-react";
-import { useAdmin } from "../../hooks/AdminHook";
+import { useAdmin } from "../../hooks/adminHook";
 
 export default function ManageEmployee() {
   const navigate = useNavigate();

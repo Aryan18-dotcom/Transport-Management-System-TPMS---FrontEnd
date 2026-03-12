@@ -4,7 +4,7 @@ import {
   FileWarning, Gauge, ShieldCheck,
   AlertCircle, ClipboardList, BarChart3, ArrowRight
 } from "lucide-react";
-import { useAdmin } from '../hooks/AdminHook';
+import { useAdmin } from '../hooks/adminHook';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router';
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Shield, Trash2, Power, ArrowLeft, Mail, Phone, Calendar, BadgeCheck } from "lucide-react";
-import { useAdmin } from "../hooks/AdminHook";
+import { useAdmin } from "../hooks/adminHook";
 import DeleteConfirmModal from "./DeleteConfirmModel";
 
 export default function EditEmployee() {

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { UserPlus, ShieldCheck, Mail, Lock, User, ChevronRight } from "lucide-react";
 import InputField from "../../helpers/InputField";
-import { useAdmin } from "../../hooks/AdminHook";// 🔥 Import the new Admin hook
+import { useAdmin } from "../../hooks/adminHook";// 🔥 Import the new Admin hook
 
 export default function CreateEmployee() {
   const navigate = useNavigate();

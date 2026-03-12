@@ -1,21 +1,6 @@
+import type { LoginPayload, LoginResponse, RegisterPayload } from "../../../types/auth";
+
 const BASE_URL = `${import.meta.env.VITE_BASE_URL}`;
-
-// 1. Define types for the Payloads
-interface RegisterPayload {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNo: string;
-  password?: string;
-  username: string;
-  companyName: string;
-  gstNumber: string;
-}
-
-interface LoginPayload {
-  userId: string;
-  password?: string;
-}
 
 // 2. REGISTER SERVICE
 export async function register({
@@ -77,7 +62,7 @@ export async function login({ userId, password }: LoginPayload): Promise<any> {
       }),
     });
 
-    const data = await response.json();
+    const data = (await response.json()) as LoginResponse;
 
     if (!response.ok) {
       // Return the message string if error

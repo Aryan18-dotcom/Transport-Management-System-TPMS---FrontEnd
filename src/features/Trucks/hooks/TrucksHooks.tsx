@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { TrucksContext } from "../trucksContext";
 import { truckServices } from "../services/truckApi";
+import type { Truck } from "../../../types/fleet";
 
 export const useTrucks = () => {
     const context = useContext(TrucksContext);
@@ -15,12 +16,9 @@ export const useTrucks = () => {
     const refreshTrucks = async () => {
         setTruckLoading(true);
         try {
-            const response = await truckServices.getTrucks();
-            const data = await response.json()
-
-            if (response.ok) {
-                setTrucks(data.vehicles);
-            }
+            // Service now returns the array directly
+            const data = await truckServices.getTrucks(); 
+            setTrucks(data); 
         } catch (error: any) {
             console.error("Fetch Error:", error);
         } finally {
@@ -29,13 +27,12 @@ export const useTrucks = () => {
     };
 
     // Handler: Add Truck
-    const handleAddTruck = async (formData: any) => {
+    const handleAddTruck = async (formData: FormData) => {
         setTruckLoading(true);
         try {
-            const response = await truckServices.createTruck(formData);
-            const data = await response.json()
-            if (response.ok) {
-                setTrucks((prev) => [...prev, data.truck]);
+            const data = await truckServices.createTruck(formData);
+            if (data.success && data.truck) {
+                setTrucks((prev) => [...prev, data.truck as Truck]);
                 return { success: true, message: data.message };
             }
             return { success: false, message: data.message || "Failed to add truck" };
@@ -48,32 +45,30 @@ export const useTrucks = () => {
 
     // Handle: Get Truck By its ID
     const handleGetTruckById = async (truckId: string) => {
-        setTruckLoading(true)
+        setTruckLoading(true);
         try {
-            const response = await truckServices.getTruckById(truckId);
-            const data = await response.json();
-            if (response.ok) {
-                return { success: true, data: data }
+            const data = await truckServices.getTruckById(truckId);
+            // Check if data exists (service returns the object directly)
+            if (data) {
+                return { success: true, data: data };
             }
-            return { success: false, message: data.message || "Failed to Get truck details." };
+            return { success: false, message: "Failed to Get truck details." };
         } catch (error: any) {
             return { success: false, message: error.message || "Network Error" };
         } finally {
             setTruckLoading(false);
         }
-    }
+    };
 
     // Handle: Update Truck Details
     const handleUpdateTruck = async (truckId: string, formData: any) => {
         setTruckLoading(true);
         try {
-            const response = await truckServices.updateTruck(truckId, formData);
-            const data = await response.json();
+            const data = await truckServices.updateTruck(truckId, formData);
 
-            if (response.ok) {
-                // Update local state so the UI reflects changes immediately
+            if (data.success) {
                 setTrucks((prev) =>
-                    prev.map((t) => (t._id === truckId ? { ...t, ...data.vehicle } : t))
+                    prev.map((t) => (t._id === truckId ? { ...t, ...(data.truck || {}) } : t))
                 );
                 return { success: true, message: data.message || "Truck updated successfully" };
             }
@@ -87,14 +82,11 @@ export const useTrucks = () => {
 
     const GetDriverAndTruckDetails = async (id: string) => {
         setTruckLoading(true);
-        setDriverLoading(true) // Using truckLoading as this is within useTrucks
+        setDriverLoading(true);
         try {
-            const res = await truckServices.driverandTruckDetails(id);
-            const data = await res.json();
+            const data = await truckServices.driverandTruckDetails(id);
 
-            if (res.ok) {
-                // Return the specific details directly to the component
-                // This allows the TruckDetails or ManageAssignment page to use the data locally
+            if (data) {
                 return {
                     success: true,
                     truckDetails: data.truckDetails,
@@ -104,7 +96,7 @@ export const useTrucks = () => {
 
             return {
                 success: false,
-                message: data.message || "Failed to fetch handover details"
+                message: "Failed to fetch handover details"
             };
         } catch (error: any) {
             console.error("Fetch Unified Details Error:", error);
@@ -121,21 +113,16 @@ export const useTrucks = () => {
     const handleAssignDriver = async (driverId: string, truckId: string) => {
         setTruckLoading(true);
         try {
-            const response = await truckServices.assignDriver(driverId, truckId);
-            const data = await response.json();
-            if (response.ok) {
-                // Refresh local trucks list to show new assignment
-                await refreshTrucks();
-                return { success: true, message: data.message, driver: data.driver };
-            }
-            return { success: false, message: data.message || "Failed to assign" };
+            const data = await truckServices.assignDriver(driverId, truckId);
+            // Refresh local list to show new assignment
+            await refreshTrucks();
+            return { success: true, message: data.message, driver: data.driver };
         } catch (error: any) {
             return { success: false, message: error.message || "Network Error" };
         } finally {
             setTruckLoading(false);
         }
     };
-
 
     return {
         trucks,

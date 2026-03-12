@@ -1,15 +1,5 @@
 import React, { createContext, useState, type ReactNode } from "react";
-
-// Define the shape of a Truck object
-interface Truck {
-    _id: string;
-    truckNumber: string;
-    model: string;
-    capacity: string;
-    isActive: boolean;
-    assignedDriver: string
-    // Add other fields as per your schema
-}
+import type { Truck } from "../../types/fleet";
 
 interface TrucksContextType {
     trucks: Truck[];
@@ -26,7 +16,6 @@ export const TrucksProvider = ({ children }: { children: ReactNode }) => {
     const [trucks, setTrucks] = useState<Truck[]>([]);
     const [truckLoading, setTruckLoading] = useState<boolean>(false);
     const [driverLoading, setDriverLoading] = useState<boolean>(false);
-
 
     return (
         <TrucksContext.Provider value={{
