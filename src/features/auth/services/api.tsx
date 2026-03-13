@@ -1,124 +1,77 @@
 import type { LoginPayload, LoginResponse, RegisterPayload } from "../../../types/auth";
 
-const BASE_URL = `${import.meta.env.VITE_BASE_URL}`;
+const BASE_URL = import.meta.env.VITE_BASE_URL?.replace(/\/$/, "") || "";
 
-// 2. REGISTER SERVICE
-export async function register({
-  firstName,
-  lastName,
-  email,
-  phoneNo,
-  password,
-  username,
-  companyName,
-  gstNumber
-}: RegisterPayload): Promise<any> {
+// 🔥 NEW: Request OTP for registration
+export async function requestRegistrationOTP(username: string, email: string) {
   try {
-    const response = await fetch(`${BASE_URL}/auth/register`, {
+    const response = await fetch(`${BASE_URL}/auth/register/request-otp`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        firstName,
-        lastName,
-        email,
-        phoneNo,
-        password,
-        username,
-        companyName,
-        gstNumber
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email }),
     });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      // Return the message string if error
-      return data.message || "Registration failed";
-    }
-
-    return data;
+    return await response.json();
   } catch (e: any) {
-    console.error("Register Error:", e);
     return e.message || "Network error occurred";
   }
 }
 
-// 3. LOGIN SERVICE
+// 🔥 UPDATED: Verify and Register (Commit to DB)
+export async function verifyAndRegister(payload: any) {
+  try {
+    const response = await fetch(`${BASE_URL}/auth/register/verify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+    return await response.json();
+  } catch (e: any) {
+    return e.message || "Network error occurred";
+  }
+}
+
+// LOGIN SERVICE
 export async function login({ userId, password }: LoginPayload): Promise<any> {
   try {
-    
     const response = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({
-        userId,
-        password,
-      }),
+      body: JSON.stringify({ userId, password }),
     });
-
-    const data = (await response.json()) as LoginResponse;
-
-    if (!response.ok) {
-      // Return the message string if error
-      return data.message || "Login failed";
-    }
-
-    return data;
+    const data = await response.json();
+    return response.ok ? data : data.message || "Login failed";
   } catch (e: any) {
-    console.error("Login Error:", e);
     return e.message || "Network error occurred";
   }
 }
 
-// 4. LOGOUT SERVICE
+// LOGOUT SERVICE
 export async function logout(): Promise<any> {
   try {
     const response = await fetch(`${BASE_URL}/auth/logout`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       credentials: "include",
     });
-    const data = await response.json();
-    if (!response.ok) {
-      return data.message || "Logout failed";
-    }
-    return data;
+    return await response.json();
   } catch (e: any) {
-    console.error("Logout Error:", e);
     return e.message || "Network error occurred";
   }
 }
 
-// 5. GET CURRENT USER
+// GET CURRENT USER
 export async function getCurrentUser() {
   try {
     const response = await fetch(`${BASE_URL}/auth/current-user`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       credentials: "include",
-    })
-
+    });
     const data = await response.json();
-    
-
-    if(!response.ok){
-      return data.message || "Cannot Get the Current User, Please Login."
-    }
-
-    return data;
-    
+    return response.ok ? data : data.message || "Session expired";
   } catch (error: any) {
-    console.error("Login Error:", error);
     return error.message || "Network error occurred";
   }
 }
