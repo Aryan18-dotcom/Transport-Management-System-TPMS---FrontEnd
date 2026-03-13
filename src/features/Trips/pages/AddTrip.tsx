@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { 
-    Save, ChevronLeft, LucideTruckElectric, Building2, 
+import {
+    Save, ChevronLeft, LucideTruckElectric, Building2,
     MapPin, Banknote, Upload, ClipboardList, ShieldCheck,
     Calculator, CalendarClock
 } from 'lucide-react';
@@ -43,10 +43,10 @@ const AddTrip = () => {
     const [formData, setFormData] = useState<TripFormData>({
         partnerCompanyId: '',
         truckId: '',
-        driverId: '', 
+        driverId: '',
         lrNumber: '',
         tripStartDate: new Date().toISOString().split('T')[0],
-        tripEndDate: '', 
+        tripEndDate: '',
         origin: '',
         destination: '',
         materialDescription: '',
@@ -77,11 +77,21 @@ const AddTrip = () => {
     }, []);
 
     // Filter trucks that have an assigned driver
-    const availableFleet = useMemo(() => trucks.filter((t: Truck) => t.assignedDriver), [trucks]);
+    const availableFleet = useMemo(() => {
+        // 🔥 Defensive Check: Ensure trucks is an array before filtering
+        if (!trucks || !Array.isArray(trucks)) return [];
+        console.log(trucks);
+        
+
+        return trucks.filter((t: Truck) => t.assignedDriver);
+    }, [trucks]);
+
+    console.log(availableFleet);
+    
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        
+
         const numericFields = ['weight', 'rate', 'diten', 'advancePaymentReceived'];
         if (numericFields.includes(name)) {
             const cleanValue = value.replace(/[^0-9.]/g, '');
@@ -95,18 +105,18 @@ const AddTrip = () => {
     const handleTruckSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedTruckId = e.target.value;
         const truckData = availableFleet.find((t: Truck) => t._id === selectedTruckId);
-        
+
         setFormData(prev => ({
             ...prev,
             truckId: selectedTruckId,
             // 🔥 FIXED: Added "|| ''" to ensure we never pass undefined to a string field
-            driverId: truckData?.assignedDriver || '' 
+            driverId: truckData?.assignedDriver || ''
         }));
     };
 
     const onSubmit = async (e: React.FormEvent) => {
         if (e) e.preventDefault();
-        
+
         if (!formData.partnerCompanyId || !formData.truckId || !formData.lrNumber || !formData.weight) {
             return toast.error("Required: Partner, Truck, LR and Weight");
         }
@@ -116,11 +126,11 @@ const AddTrip = () => {
 
         try {
             const data = new FormData();
-            
+
             Object.keys(formData).forEach(key => {
                 const value = (formData as any)[key];
                 if (key === 'tripEndDate' && formData.status !== 'DELIVERED') {
-                    return; 
+                    return;
                 }
                 data.append(key, value);
             });
@@ -128,7 +138,7 @@ const AddTrip = () => {
             if (podFile) data.append("podFile", podFile);
 
             const res = await handleCreateTrip(data);
-            
+
             // 🔥 FIXED: Logic narrowing for the API response
             if (res && res.ok) {
                 toast.success("Trip Ledger Updated", { id: tid });
@@ -148,7 +158,7 @@ const AddTrip = () => {
 
     return (
         <div className={`p-4 lg:p-8 max-w-[1400px] mx-auto min-h-screen bg-[#020202] text-zinc-400 ${isDisabled ? 'pointer-events-none opacity-80' : ''}`}>
-            
+
             <header className="flex items-center justify-between mb-10 bg-neutral-900/40 border border-white/5 p-5 rounded-[24px] backdrop-blur-xl sticky top-6 z-50 shadow-2xl">
                 <div className="flex items-center gap-4">
                     <button type="button" onClick={() => navigate(-1)} className="p-2.5 bg-neutral-950 border border-neutral-800 rounded-xl hover:text-white transition-all shadow-lg" disabled={isDisabled}>
@@ -157,13 +167,13 @@ const AddTrip = () => {
                     <div>
                         <h1 className="text-xl font-black text-white uppercase tracking-tighter">New Trip Entry</h1>
                         <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2 mt-1">
-                           <LucideTruckElectric size={12} className="text-indigo-500" /> Secure Input Mode V1.3
+                            <LucideTruckElectric size={12} className="text-indigo-500" /> Secure Input Mode V1.3
                         </p>
                     </div>
                 </div>
-                <button 
+                <button
                     type="button"
-                    onClick={onSubmit} 
+                    onClick={onSubmit}
                     disabled={isDisabled}
                     className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-zinc-800 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-2xl transition-all flex items-center gap-2 active:scale-95"
                 >
@@ -244,26 +254,26 @@ const AddTrip = () => {
                 <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-32">
                     <div className="bg-neutral-900 border border-neutral-800 rounded-[32px] p-8 space-y-4 shadow-xl">
                         <div className="flex items-center gap-2 text-zinc-500 border-b border-neutral-800 pb-4 mb-2">
-                             <ShieldCheck size={18} className="text-indigo-500" />
-                             <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Trip Status</h3>
+                            <ShieldCheck size={18} className="text-indigo-500" />
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Trip Status</h3>
                         </div>
                         <SelectField label="Current Status" name="status" value={formData.status} onChange={handleInputChange} options={[{ label: 'Scheduled', value: 'SCHEDULED' }, { label: 'In Transit', value: 'IN_TRANSIT' }, { label: 'Delivered', value: 'DELIVERED' }, { label: 'Cancelled', value: 'CANCELLED' }]} />
                         <InputField label="Start Date" name="tripStartDate" type="date" value={formData.tripStartDate} onChange={handleInputChange} />
-                        
+
                         {formData.status === 'DELIVERED' && (
                             <div className="animate-in fade-in slide-in-from-top-2 duration-300 pt-2 border-t border-neutral-800 mt-2">
-                                <InputField 
-                                    label="Arrival / Ending Date" 
-                                    name="tripEndDate" 
-                                    type="date" 
-                                    value={formData.tripEndDate} 
+                                <InputField
+                                    label="Arrival / Ending Date"
+                                    name="tripEndDate"
+                                    type="date"
+                                    value={formData.tripEndDate}
                                     onChange={handleInputChange}
                                     icon={<CalendarClock size={16} />}
                                 />
                             </div>
                         )}
                     </div>
-                    
+
                     <div className="bg-neutral-900 border border-neutral-800 rounded-[32px] p-8 text-center space-y-4 shadow-xl">
                         <div className="flex items-center justify-center gap-2 text-zinc-500">
                             <ClipboardList size={16} />

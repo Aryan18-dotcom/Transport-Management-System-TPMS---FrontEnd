@@ -79,11 +79,14 @@ const UpdateBillDetails = () => {
     }
   };
 
-  if (loading) return (
-    <div className="h-screen bg-[#09090b] flex items-center justify-center">
-      <Loader2 className="animate-spin text-[#4f46e5] w-12 h-12" />
-    </div>
-  );
+    if (actionLoading || loading) return (
+      <div className="h-screen flex items-center justify-center bg-[#09090b] px-2 sm:px-4">
+        <div className="flex flex-col items-center gap-2 sm:gap-4">
+          <Loader2 className="animate-spin text-[#4f46e5] w-8 h-8 sm:w-12 sm:h-12" />
+          <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-500">Decrypting Ledger Data...</p>
+        </div>
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-[#09090b] p-6 md:p-12 font-sans text-neutral-100 selection:bg-[#4f46e5]">

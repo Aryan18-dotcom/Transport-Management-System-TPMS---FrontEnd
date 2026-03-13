@@ -44,9 +44,9 @@ export default function EditEmployee() {
   };
 
   if (!targetEmployee) return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] space-y-4">
-      <div className="animate-spin h-10 w-10 border-4 border-indigo-500 border-t-transparent rounded-full shadow-lg shadow-indigo-500/20" />
-      <p className="text-zinc-500 text-sm font-medium animate-pulse">Syncing Personnel Data...</p>
+    <div className="flex flex-col items-center justify-center min-h-[80vh] space-y-2 sm:space-y-4 px-2 sm:px-4">
+      <div className="animate-spin h-8 w-8 sm:h-10 sm:w-10 border-4 border-indigo-500 border-t-transparent rounded-full shadow-lg shadow-indigo-500/20" />
+      <p className="text-zinc-500 text-xs sm:text-sm font-medium animate-pulse">Syncing Personnel Data...</p>
     </div>
   );
 

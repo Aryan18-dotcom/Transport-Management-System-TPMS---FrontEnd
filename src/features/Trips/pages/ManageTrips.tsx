@@ -10,18 +10,20 @@ import {
 // Hooks
 import { useTrips } from '../hooks/useTrips';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '../../auth/hooks/useAuth';
 
 const ManageTrips = () => {
     const navigate = useNavigate();
     const { trips, tripsLoading, refreshTrips, handleUpdateStatus, handleUpdatePayment } = useTrips();
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("ALL");
+    const { user } = useAuth()
 
     // --- State for Confirmation Logic ---
-    const [confirmAction, setConfirmAction] = useState<{ 
-        show: boolean, 
-        tripId: string, 
-        lr: string, 
+    const [confirmAction, setConfirmAction] = useState<{
+        show: boolean,
+        tripId: string,
+        lr: string,
         newStatus: string,
         type: 'SHIPMENT' | 'PAYMENT'
     }>({
@@ -56,9 +58,9 @@ const ManageTrips = () => {
     const executeUpdate = async () => {
         const { tripId, newStatus, type } = confirmAction;
         const tid = toast.loading(`Processing update...`);
-        
+
         try {
-            const res = type === 'SHIPMENT' 
+            const res = type === 'SHIPMENT'
                 ? await handleUpdateStatus(tripId, newStatus)
                 : await handleUpdatePayment(tripId, newStatus);
 
@@ -98,22 +100,22 @@ const ManageTrips = () => {
 
     return (
         <div className="p-4 lg:p-8 max-w-[1600px] mx-auto min-h-screen bg-[#020202] text-zinc-400 space-y-8">
-            
+
             {/* 🔥 UNIFIED CONFIRMATION MODAL */}
             <AnimatePresence>
                 {confirmAction.show && (
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                         className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
                     >
-                        <motion.div 
+                        <motion.div
                             initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
                             className={`bg-neutral-900 border p-8 rounded-[32px] max-w-sm w-full shadow-2xl space-y-6 text-center
                             ${confirmAction.newStatus === 'CANCELLED' ? 'border-red-500/20' : 'border-indigo-500/20'}`}
                         >
                             <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto
-                                ${confirmAction.newStatus === 'CANCELLED' ? 'bg-red-500/10 text-red-500' : 
-                                  confirmAction.newStatus === 'DELIVERED' || confirmAction.newStatus === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-indigo-500/10 text-indigo-500'}`}>
+                                ${confirmAction.newStatus === 'CANCELLED' ? 'bg-red-500/10 text-red-500' :
+                                    confirmAction.newStatus === 'DELIVERED' || confirmAction.newStatus === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-indigo-500/10 text-indigo-500'}`}>
                                 {confirmAction.newStatus === 'CANCELLED' ? <AlertTriangle size={32} /> : <Info size={32} />}
                             </div>
                             <div className="space-y-2">
@@ -141,7 +143,7 @@ const ManageTrips = () => {
                         Operations
                         <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-3 py-1 rounded-full tracking-[0.2em] border border-indigo-500/20">SYSTEM LIVE</span>
                     </h1>
-                    <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest leading-loose">Fleet movement control for AK Roadways</p>
+                    <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest leading-loose">Fleet movement control for {user?.companyId?.companyName || "Company"}</p>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 xl:w-[60%]">
                     <StatCard label="Total Trips" value={stats.total} icon={<LucideTruckElectric size={16} />} color="indigo" />
@@ -173,7 +175,7 @@ const ManageTrips = () => {
                 <AnimatePresence mode='popLayout'>
                     {filteredTrips.map((trip: any) => (
                         <motion.div layout key={trip._id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="group bg-neutral-900/80 border border-neutral-800 rounded-[28px] p-5 hover:border-indigo-500/30 transition-all flex flex-col md:flex-row items-center gap-6 cursor-pointer relative overflow-hidden" onClick={() => navigate(`/admin-dashboard/trips/manage/${trip._id}`)}>
-                            
+
                             <div className="flex items-center gap-4 w-full md:w-64 shrink-0">
                                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${trip.status === 'DELIVERED' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-indigo-500/10 border-indigo-500/20 text-indigo-500'}`}><LucideTruckElectric size={24} /></div>
                                 <div className="min-w-0">
@@ -191,7 +193,7 @@ const ManageTrips = () => {
                             <div className="flex flex-wrap items-center gap-4 w-full md:w-auto shrink-0 bg-black/30 p-3 rounded-2xl border border-white/5">
                                 <div className="flex flex-col gap-1.5 min-w-[120px]">
                                     <span className="text-[7px] font-black text-zinc-600 uppercase flex items-center gap-1"><CheckCircle2 size={8} /> Shipment</span>
-                                    <select 
+                                    <select
                                         className="bg-neutral-900 border border-neutral-800 text-[9px] font-black text-indigo-400 rounded-lg px-2 py-1.5 outline-none cursor-pointer"
                                         value={trip.status}
                                         onClick={(e) => e.stopPropagation()}
@@ -206,7 +208,7 @@ const ManageTrips = () => {
 
                                 <div className="flex flex-col gap-1.5 min-w-[120px]">
                                     <span className="text-[7px] font-black text-zinc-600 uppercase flex items-center gap-1"><Wallet size={8} /> Payment</span>
-                                    <select 
+                                    <select
                                         className={`bg-neutral-900 border border-neutral-800 text-[9px] font-black rounded-lg px-2 py-1.5 outline-none cursor-pointer
                                         ${trip.paymentStatus === 'COMPLETED' ? 'text-emerald-500' : trip.paymentStatus === 'PARTIAL' ? 'text-amber-500' : 'text-red-500'}`}
                                         value={trip.paymentStatus}

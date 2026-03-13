@@ -137,7 +137,7 @@ const EditTripsDetails = () => {
 
     return (
         <div className={`p-4 lg:p-8 max-w-[1400px] mx-auto min-h-screen bg-[#020202] text-zinc-400 ${isDisabled ? 'opacity-80' : ''}`}>
-            
+
             {/* Delete Modal remained same for safety */}
             {showDeleteConfirm && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
@@ -173,40 +173,45 @@ const EditTripsDetails = () => {
             </header>
 
             <form onSubmit={onUpdate} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pb-20">
-                
+
                 {/* 1. PRIORITY BLOCK: PAYMENT & DELIVERY */}
                 <div className="lg:col-span-12 space-y-6">
                     <div className="bg-neutral-900 border border-neutral-800 rounded-[32px] p-8 shadow-xl border-t-indigo-500 border-t-4">
                         <div className="flex items-center gap-2 text-zinc-500 border-b border-neutral-800 pb-4 mb-6">
-                             <ShieldCheck size={18} className="text-indigo-500" />
-                             <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Priority Execution Controls</h3>
+                            <ShieldCheck size={18} className="text-indigo-500" />
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Priority Execution Controls</h3>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            {/* Delivery Status */}
-                            <div className="space-y-4">
-                                <SelectField 
-                                    label="Trip Progress" 
-                                    name="status" 
-                                    value={formData.status} 
-                                    onChange={handleInputChange} 
-                                    options={[{ label: 'Scheduled', value: 'SCHEDULED' }, { label: 'In Transit', value: 'IN_TRANSIT' }, { label: 'Delivered', value: 'DELIVERED' }, { label: 'Cancelled', value: 'CANCELLED' }]} 
-                                />
-                                {formData.status === 'DELIVERED' && (
-                                    <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                                        <InputField label="Arrival Date" name="tripEndDate" type="date" value={formData.tripEndDate} onChange={handleInputChange} icon={<CalendarClock size={16} />} />
-                                    </div>
-                                )}
+                            <div className='space-y-4'>
+                                {/* LR Number */}
+                                <InputField label="LR Number" name="lrNumber" type="text" value={formData.lrNumber} onChange={handleInputChange} icon={<Wallet size={16} />} />
+
+                                {/* Delivery Status */}
+                                <div className="space-y-4">
+                                    <SelectField
+                                        label="Trip Progress"
+                                        name="status"
+                                        value={formData.status}
+                                        onChange={handleInputChange}
+                                        options={[{ label: 'Scheduled', value: 'SCHEDULED' }, { label: 'In Transit', value: 'IN_TRANSIT' }, { label: 'Delivered', value: 'DELIVERED' }, { label: 'Cancelled', value: 'CANCELLED' }]}
+                                    />
+                                    {formData.status === 'DELIVERED' && (
+                                        <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <InputField label="Arrival Date" name="tripEndDate" type="date" value={formData.tripEndDate} onChange={handleInputChange} icon={<CalendarClock size={16} />} />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Payment Status */}
                             <div className="space-y-4">
-                                <SelectField 
-                                    label="Accounting Status" 
-                                    name="paymentStatus" 
-                                    value={formData.paymentStatus} 
-                                    onChange={handleInputChange} 
-                                    options={[{ label: 'Pending', value: 'PENDING' }, { label: 'Partial', value: 'PARTIAL' }, { label: 'Completed', value: 'COMPLETED' }]} 
+                                <SelectField
+                                    label="Accounting Status"
+                                    name="paymentStatus"
+                                    value={formData.paymentStatus}
+                                    onChange={handleInputChange}
+                                    options={[{ label: 'Pending', value: 'PENDING' }, { label: 'Partial', value: 'PARTIAL' }, { label: 'Completed', value: 'COMPLETED' }]}
                                 />
                                 <InputField label="Advance Rec. (₹)" name="advancePaymentReceived" type="text" value={formData.advancePaymentReceived} onChange={handleInputChange} icon={<Wallet size={16} />} />
                             </div>

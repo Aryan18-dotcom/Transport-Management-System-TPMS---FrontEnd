@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AlertTriangle, X, ArrowRight, ShieldAlert, CalendarClock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../auth/hooks/useAuth";
 
 interface GlobalAlertBannerProps {
   alerts: any[]; 
@@ -11,6 +12,7 @@ function GlobalAlertBanner({ alerts }: GlobalAlertBannerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation(); // 🔥 Get current path to determine context
+  const { user } = useAuth()
 
   // Determine if we are in Admin or Employee view
   const isAdmin = location.pathname.includes("admin-dashboard");
@@ -23,21 +25,20 @@ function GlobalAlertBanner({ alerts }: GlobalAlertBannerProps) {
   return (
     <>
       {/* 1. SLEEK MINI BANNER */}
-      <div className="sticky top-0 z-[100] bg-[#020202] border-b border-amber-500/20 px-4 lg:px-12 py-3 flex items-center justify-between shadow-2xl">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center justify-center w-6 h-6 bg-amber-500/10 rounded-full">
-            <AlertTriangle size={14} className="text-amber-500 animate-pulse" />
+      <div className="sticky md:top-0 sm:top-10 z-[10] bg-[#020202] border-b border-amber-500/20 px-2 sm:px-4 lg:px-12 py-2 sm:py-3 flex flex-col sm:flex-row items-center justify-between shadow-2xl">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center justify-center w-4 h-4 sm:w-6 sm:h-6 bg-amber-500/10 rounded-full">
+            <AlertTriangle size={10} className="sm:size-14 text-amber-500 animate-pulse" />
           </div>
-          <p className="text-[10px] text-amber-200 font-black uppercase tracking-[0.2em]">
+          <p className="text-[8px] sm:text-[10px] text-amber-200 font-black uppercase tracking-[0.2em]">
             System Alert: <span className="text-white">{count} Urgent Compliance</span> items pending review
           </p>
         </div>
-        
         <button 
           onClick={() => setIsOpen(true)}
-          className="text-[10px] font-black text-amber-500 hover:text-amber-400 transition-colors uppercase tracking-[0.2em] flex items-center gap-2 group"
+          className="text-[8px] sm:text-[10px] font-black text-amber-500 hover:text-amber-400 transition-colors uppercase tracking-[0.2em] flex items-center gap-1 sm:gap-2 group mt-2 sm:mt-0"
         >
-          Review Now <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+          Review Now <ArrowRight size={10} className="sm:size-12 group-hover:translate-x-1 transition-transform" />
         </button>
       </div>
 
@@ -124,7 +125,7 @@ function GlobalAlertBanner({ alerts }: GlobalAlertBannerProps) {
               </div>
 
               <div className="mt-32 text-center border-t border-neutral-900 pt-16 flex flex-col items-center gap-6">
-                 <p className="text-[9px] font-black text-zinc-700 uppercase tracking-[0.5em]">AK Roadways Registry Auditor v1.0</p>
+                 <p className="text-[9px] font-black text-zinc-700 uppercase tracking-[0.5em]">{user?.companyId?.companyName || "Company"} Registry Auditor v1.0</p>
                  <button 
                   onClick={() => setIsOpen(false)}
                   className="px-16 py-5 bg-neutral-900 border border-neutral-800 text-zinc-400 hover:text-white rounded-[24px] text-[11px] font-black uppercase tracking-[0.3em] hover:border-amber-500/40 transition-all shadow-2xl"

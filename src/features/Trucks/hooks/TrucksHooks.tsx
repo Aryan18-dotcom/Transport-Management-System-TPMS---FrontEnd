@@ -16,11 +16,13 @@ export const useTrucks = () => {
     const refreshTrucks = async () => {
         setTruckLoading(true);
         try {
-            // Service now returns the array directly
-            const data = await truckServices.getTrucks(); 
-            setTrucks(data); 
+            // getTrucks returns Truck[]
+            const trucksArr = await truckServices.getTrucks();
+            const vehicleList = Array.isArray(trucksArr) ? trucksArr : [];
+            setTrucks(vehicleList);
         } catch (error: any) {
             console.error("Fetch Error:", error);
+            setTrucks([]);
         } finally {
             setTruckLoading(false);
         }

@@ -25,32 +25,32 @@ const BillDetails = () => {
   }, [billId]);
 
   if (actionLoading) return (
-    <div className="h-screen flex items-center justify-center bg-[#09090b]">
-      <div className="flex flex-col items-center gap-4">
-        <Loader2 className="animate-spin text-[#4f46e5] w-12 h-12" />
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-500">Decrypting Ledger Data...</p>
+    <div className="h-screen flex items-center justify-center bg-[#09090b] px-2 sm:px-4">
+      <div className="flex flex-col items-center gap-2 sm:gap-4">
+        <Loader2 className="animate-spin text-[#4f46e5] w-8 h-8 sm:w-12 sm:h-12" />
+        <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-500">Decrypting Ledger Data...</p>
       </div>
     </div>
   );
 
   if (!bill) return <div className="p-20 text-center font-black uppercase text-neutral-500 bg-[#09090b] min-h-screen">Bill Not Found</div>;
+  if (!bill) return <div className="p-4 sm:p-20 text-center font-black uppercase text-neutral-500 bg-[#09090b] min-h-screen">Bill Not Found</div>;
 
   return (
-    <div className="min-h-screen bg-[#09090b] p-4 md:p-10 font-sans text-neutral-100 selection:bg-[#4f46e5] selection:text-white">
+    <div className="min-h-screen bg-[#09090b] p-2 sm:p-4 md:p-10 font-sans text-neutral-100 selection:bg-[#4f46e5] selection:text-white">
       <div className="max-w-7xl mx-auto">
-        
         {/* TOP NAVIGATION & ACTIONS */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sm:gap-6 mb-6 sm:mb-12">
           <div>
              <button 
                 onClick={() => navigate('/admin-dashboard/bill/all')}
-                className="group flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-neutral-500 hover:text-[#4f46e5] transition-all mb-3"
+                className="group flex items-center gap-1 sm:gap-2 text-[8px] sm:text-[10px] font-bold uppercase tracking-widest text-neutral-500 hover:text-[#4f46e5] transition-all mb-2 sm:mb-3"
               >
-                <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" /> Back to Bill Ledger
+                <ArrowLeft className="w-2 h-2 sm:w-3 sm:h-3 group-hover:-translate-x-1 transition-transform" /> Back to Bill Ledger
               </button>
-              <div className="flex items-center gap-4">
-                <h1 className="text-4xl font-black tracking-tighter uppercase text-white">{bill.billNumber}</h1>
-                <span className={`px-4 py-1 rounded-md text-[9px] font-black uppercase tracking-[0.2em] border ${
+              <div className="flex items-center gap-2 sm:gap-4">
+                <h1 className="text-xl sm:text-4xl font-black tracking-tighter uppercase text-white">{bill.billNumber}</h1>
+                <span className={`px-2 sm:px-4 py-0.5 sm:py-1 rounded-md text-[7px] sm:text-[9px] font-black uppercase tracking-[0.2em] border ${
                   bill.status === 'FINALIZED' ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400' : 'bg-amber-500/10 border-amber-500/50 text-amber-400'
                 }`}>
                   {bill.status}
@@ -61,7 +61,7 @@ const BillDetails = () => {
           <div className="flex gap-3 w-full md:w-auto">
             <button 
               className="flex-1 md:flex-none flex items-center justify-center gap-3 bg-[#4f46e5] text-white px-8 py-4 rounded-xl font-bold uppercase text-[11px] tracking-widest hover:bg-[#4338ca] shadow-lg shadow-[#4f46e5]/20 transition-all active:scale-95"
-              onClick={() => navigate(`/admin-dashboard/generate-invoice/${bill._id}`)}
+              onClick={() => navigate(`/admin-dashboard/invoice/new`)}
             >
               <Printer className="w-4 h-4" /> Generate Invoice
             </button>

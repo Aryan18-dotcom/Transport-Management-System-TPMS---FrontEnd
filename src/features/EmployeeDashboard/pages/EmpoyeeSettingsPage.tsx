@@ -102,7 +102,7 @@ const EmployeeSettingsPage = () => {
             <div className="max-w-5xl mx-auto">
                 <header className="mb-12">
                     <h1 className="text-4xl font-black uppercase tracking-tighter italic">System Configuration</h1>
-                    <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em] mt-3">AK Roadways Terminal v1.0 • Settings</p>
+                        <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em] mt-3">{user?.companyId?.companyName || "Company"} Terminal v1.0 • Settings</p>
                 </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">

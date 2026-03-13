@@ -14,7 +14,6 @@ function DashboardContent({ activeMenu, setActiveMenu }: any) {
     if (user) fetchMetrics();
   }, [user]);
 
-  // 🔥 CORE DATA LOGIC: Extract and filter alerts for the banner
   const bannerAlerts = useMemo(() => {
     if (!metrics?.metrics?.compliance) return [];
 
@@ -38,15 +37,24 @@ function DashboardContent({ activeMenu, setActiveMenu }: any) {
   }, [metrics]);
 
   return (
-    <div className="min-h-screen bg-[#070707] text-zinc-200 flex overflow-hidden font-sans">
+    <div className="min-h-screen bg-[#070707] text-zinc-200 flex overflow-hidden font-sans relative">
+      {/* 1. Sidebar is now fixed/sticky internally */}
       <SideBar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
-      <main className="flex-1 overflow-y-auto relative h-screen">
-        {/* 🔥 Passing the dynamic data here */}
-        <GlobalAlertBanner alerts={bannerAlerts} />
+      
+      {/* 2. Main Content Area */}
+      <main className="flex-1 overflow-y-auto h-screen relative">
         
-        <div className="relative">
-          <Outlet />
+        {/* 🔥 MOBILE PADDING: Adds 64px (h-16) padding-top only on mobile to clear the hamburger bar */}
+        <div className="lg:pt-0 pt-16">
+          <GlobalAlertBanner alerts={bannerAlerts} />
+          
+          <div className="relative">
+            <Outlet />
+          </div>
         </div>
+
+        {/* Optional: Subtle background glow for the ERP aesthetic */}
+        <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-indigo-600/5 blur-[120px] rounded-full -mr-64 -mt-64 pointer-events-none" />
       </main>
     </div>
   );

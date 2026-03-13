@@ -5,6 +5,7 @@ import { useEmployee } from '../hook/employeeHook';
 import GlobalAlertBanner from '../../AdminDashboard/components/GlobalAlertBanner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldAlert, KeyRound } from 'lucide-react';
+import { useAuth } from '../../auth/hooks/useAuth';
 
 const EmployeeDashboard = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const EmployeeDashboard = () => {
   const [showPrompt, setShowPrompt] = useState(false);
   
   const { metrics, fetchOpsMetrics, opsLoading } = useEmployee();
+  const { user } = useAuth()
 
   useEffect(() => {
     // Initial fetch of today's movements and security status
@@ -57,7 +59,7 @@ const EmployeeDashboard = () => {
                 
                 <h2 className="text-3xl font-black uppercase tracking-tighter text-white mb-4 italic leading-none">Security Protocol</h2>
                 <p className="text-zinc-500 text-[11px] font-bold uppercase tracking-widest leading-relaxed mb-10 px-4">
-                  Your account is currently using a <span className="text-amber-500">temporary access key</span> assigned by the Admin. For the safety of <span className="text-white">AK Roadways Terminal</span>, please establish a secure personal password.
+                  Your account is currently using a <span className="text-amber-500">temporary access key</span> assigned by the Admin. For the safety of <span className="text-white">{user?.companyId?.companyName || "Company"} Terminal</span>, please establish a secure personal password.
                 </p>
 
                 <div className="flex flex-col gap-4">

@@ -4,11 +4,13 @@ import { usePartner } from '../../Partner/hooks/usePartner';
 import { useTrips } from '../../Trips/hooks/useTrips';
 import toast from 'react-hot-toast';
 import useBills from '../hook/useBill';
+import { useNavigate } from 'react-router';
 
 const GenerateBill = () => {
     const { createNewBill, actionLoading } = useBills();
     const { partners, partnerLoading, refreshPartners } = usePartner();
     const { getTripForThePartnerCompany } = useTrips();
+    const navigate = useNavigate()
 
     const [step, setStep] = useState(1);
     const [selectedPartner, setSelectedPartner] = useState<any>(null);
@@ -70,8 +72,8 @@ const GenerateBill = () => {
                 trips: selectedTrips,
                 remarks: remarks || `Consolidated bill for ${selectedTrips.length} trips.`
             });
-            console.log("Bill Created:", data);
             toast.success("Bill successfully generated.");
+            navigate(`/admin-dashboard/bill/${data._id}`)
             setStep(1); // Reset to step 1
             setSelectedTrips([]);
         } catch (err) { console.error(err); }
