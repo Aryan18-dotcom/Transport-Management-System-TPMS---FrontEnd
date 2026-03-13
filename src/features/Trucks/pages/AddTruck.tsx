@@ -14,16 +14,16 @@ export default function AddTruck() {
     const { handleAddTruck, truckLoading } = useTrucks();
 
     const [formData, setFormData] = useState({
-        truckNumber: "GJ-01-BD-5004",
-        truckType: "CONTAINER",
-        capacityTons: "30",
-        rcNumber: "RC-12345",
-        rcExpiryDate: "2026-03-22",
-        insuranceNumber: "INC-12345",
-        insuranceExpiryDate: "2026-03-22",
-        fitnessCertExpiryDate: "2026-03-22",
-        nationalPermitExpiryDate: "2026-03-22",
-        status: "AVAILABLE"
+        truckNumber: "",
+        truckType: "",
+        capacityTons: "",
+        rcNumber: "",
+        rcExpiryDate: "",
+        insuranceNumber: "",
+        insuranceExpiryDate: "",
+        fitnessCertExpiryDate: "",
+        nationalPermitExpiryDate: "",
+        status: ""
     });
 
     const [files, setFiles] = useState<{ [key: string]: File | null }>({
