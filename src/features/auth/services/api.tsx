@@ -79,6 +79,7 @@ export async function login({ userId, password }: LoginPayload): Promise<any> {
 // 4. LOGOUT SERVICE
 export async function logout(): Promise<any> {
   try {
+    console.log("BASE URL", BASE_URL)
     const response = await fetch(`${BASE_URL}/auth/logout`, {
       method: "POST",
       headers: {
