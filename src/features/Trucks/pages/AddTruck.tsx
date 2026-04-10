@@ -14,16 +14,16 @@ export default function AddTruck() {
     const { handleAddTruck, truckLoading } = useTrucks();
 
     const [formData, setFormData] = useState({
-        truckNumber: "GJ-01-BD-5004",
-        truckType: "CONTAINER",
-        capacityTons: "30",
-        rcNumber: "RC-12345",
-        rcExpiryDate: "2026-03-22",
-        insuranceNumber: "INC-12345",
-        insuranceExpiryDate: "2026-03-22",
-        fitnessCertExpiryDate: "2026-03-22",
-        nationalPermitExpiryDate: "2026-03-22",
-        status: "AVAILABLE"
+        truckNumber: "",
+        truckType: "",
+        capacityTons: "",
+        rcNumber: "",
+        rcExpiryDate: "",
+        insuranceNumber: "",
+        insuranceExpiryDate: "",
+        fitnessCertExpiryDate: "",
+        nationalPermitExpiryDate: "",
+        status: ""
     });
 
     const [files, setFiles] = useState<{ [key: string]: File | null }>({
@@ -134,20 +134,6 @@ export default function AddTruck() {
 
                                 <InputField label="Capacity (Tons) *" name="capacityTons" type="number" placeholder="25" value={formData.capacityTons} onChange={handleChange} disabled={truckLoading} />
 
-                                {/* <div className="space-y-2">
-                                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-tighter ml-1">Current Status</label>
-                                    <select
-                                        name="status"
-                                        value={formData.status}
-                                        onChange={handleChange}
-                                        disabled={truckLoading}
-                                        className="w-full bg-neutral-950 border border-neutral-800 rounded-2xl px-4 py-3 text-white text-sm outline-none focus:border-indigo-500 transition-all disabled:cursor-not-allowed disabled:opacity-50"
-                                    >
-                                        <option value="AVAILABLE">Available</option>
-                                        <option value="ON_TRIP">On Trip</option>
-                                        <option value="MAINTENANCE">Maintenance</option>
-                                    </select>
-                                </div> */}
                             </div>
                         </div>
 

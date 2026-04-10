@@ -76,3 +76,50 @@ export async function getCurrentUser() {
     return error.message || "Network error occurred";
   }
 }
+
+// 🔥 REQUEST RESET OTP
+export async function requestPasswordResetOTP(email: string) {
+  try {
+    const response = await fetch(`${BASE_URL}/auth/password/request-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    return await response.json();
+    
+  } catch (e: any) {
+    return e.message || "Network error occurred";
+  }
+}
+
+// 🔥 VERIFY RESET OTP
+export async function verifyPasswordResetOTP(email: string, otp: string) {
+  try {
+    const response = await fetch(`${BASE_URL}/auth/password/verify-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp }),
+    });
+    return await response.json();
+  } catch (e: any) {
+    return e.message || "Network error occurred";
+  }
+}
+
+// 🔥 RESET PASSWORD
+export async function resetPassword(payload: {
+  email: string;
+  otp: string;
+  newPassword: string;
+}) {
+  try {
+    const response = await fetch(`${BASE_URL}/auth/password/reset`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    return await response.json();
+  } catch (e: any) {
+    return e.message || "Network error occurred";
+  }
+}

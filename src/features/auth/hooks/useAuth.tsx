@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "../authContext.tsx";
-import { login, logout, requestRegistrationOTP, verifyAndRegister } from "../services/api.tsx";
+import { login, logout, requestRegistrationOTP, verifyAndRegister, requestPasswordResetOTP, verifyPasswordResetOTP, resetPassword } from "../services/api.tsx";
 import { useNavigate } from "react-router-dom";
 
 export const useAuth = () => {
@@ -33,7 +33,7 @@ export const useAuth = () => {
     try {
       const data = await verifyAndRegister(payload);
       if (typeof data === "string") return { success: false, message: data };
-      
+
       if (data.user) {
         setUser(data.user);
         return { success: true };
@@ -71,12 +71,73 @@ export const useAuth = () => {
     }
   };
 
-  return { 
-    user, 
-    loading, 
-    requestOTP, 
-    verifyAndRegister: handleVerifyAndRegister, 
-    handleLogin, 
-    handleLogout 
+  // 🔥 REQUEST RESET OTP
+  const requestResetOTP = async ({ email }: { email: string }) => {
+    setLoading(true);
+    try {
+      const data = await requestPasswordResetOTP(email);
+
+      if (data.success || data.message?.includes("OTP")) {
+        return { success: true };
+      }
+
+      return { success: false, message: data.message || data };
+    } catch (err: any) {
+      return { success: false, message: err.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔥 VERIFY OTP
+  const verifyResetOTP = async ({ email, otp }: { email: string; otp: string }) => {
+    setLoading(true);
+    try {
+      const data = await verifyPasswordResetOTP(email, otp);
+
+      if (data.success || data.message?.includes("verified")) {
+        return { success: true };
+      }
+
+      return { success: false, message: data.message || data };
+    } catch (err: any) {
+      return { success: false, message: err.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔥 RESET PASSWORD
+  const handleResetPassword = async (payload: {
+    email: string;
+    otp: string;
+    newPassword: string;
+  }) => {
+    setLoading(true);
+    try {
+      const data = await resetPassword(payload);
+
+      if (data.success || data.message?.includes("successful")) {
+        return { success: true };
+      }
+
+      return { success: false, message: data.message || data };
+    } catch (err: any) {
+      return { success: false, message: err.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    user,
+    loading,
+    requestOTP,
+    verifyAndRegister: handleVerifyAndRegister,
+    handleLogin,
+    handleLogout,
+    requestResetOTP,
+    verifyResetOTP,
+    resetPassword: handleResetPassword
   };
 };

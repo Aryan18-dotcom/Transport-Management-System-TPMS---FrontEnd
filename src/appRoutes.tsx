@@ -59,11 +59,16 @@ import DashboardContent from "./features/EmployeeDashboard/components/DashboardC
 import { EmployeeProvider } from "./features/EmployeeDashboard/employeeContext.tsx"
 import EmployeeSettingsPage from "./features/EmployeeDashboard/pages/EmpoyeeSettingsPage.tsx"
 import AdminSettingsPage from "./features/AdminDashboard/pages/AdminSettingsPage.tsx"
+import ResetPassword from "./features/auth/pages/ResetPassword.tsx"
 
 export const router = createBrowserRouter([
     {
         path: '/login',
         element: <Login />
+    },
+    {
+        path: '/reset-password',
+        element: <ResetPassword />
     },
     {
         path: '/register',

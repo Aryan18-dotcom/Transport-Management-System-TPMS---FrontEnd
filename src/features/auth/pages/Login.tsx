@@ -112,7 +112,7 @@ export default function Login() {
                   value={formData.password}
                   onChange={handleChange}
                 />
-                <button type="button" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors ml-1">
+                <button onClick={() => navigate("/reset-password", { state: { fromLogin: true } })} type="button" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors ml-1">
                   Trouble signing in?
                 </button>
               </div>
