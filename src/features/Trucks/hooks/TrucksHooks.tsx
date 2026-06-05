@@ -16,9 +16,11 @@ export const useTrucks = () => {
     const refreshTrucks = async () => {
         setTruckLoading(true);
         try {
-            // getTrucks returns Truck[]
-            const trucksArr = await truckServices.getTrucks();
-            const vehicleList = Array.isArray(trucksArr) ? trucksArr : [];
+            const responseData = await truckServices.getTrucks() as any;
+
+            const vehicleList = Array.isArray(responseData?.vehicles) ? responseData.vehicles : [];
+
+            setTrucks(vehicleList);
             setTrucks(vehicleList);
         } catch (error: any) {
             console.error("Fetch Error:", error);
