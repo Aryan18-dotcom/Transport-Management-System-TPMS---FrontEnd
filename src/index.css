@@ -43,3 +43,10 @@ html, body {
   /* thumb color (neutral-800) | track color (neutral-950) */
   scrollbar-color: oklch(62.078% 0.20567 259.002 / 0.76) #0a0a0a;
 }
+
+button, 
+[type="button"], 
+[type="reset"], 
+[type="submit"] {
+  cursor: pointer;
+}

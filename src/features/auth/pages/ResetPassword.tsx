@@ -1,4 +1,4 @@
-import { useState, useRef, ChangeEvent, ClipboardEvent } from "react";
+import { useState, useRef, type ClipboardEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
@@ -189,7 +189,7 @@ const ResetPassword = () => {
                                                 type="text"
                                                 maxLength={1}
                                                 value={digit}
-                                                ref={(el) => (inputsRef.current[index] = el)}
+                                                ref={(el) => {inputsRef.current[index] = el}}
                                                 onKeyDown={(e) => handleKeyDown(e, index)}
                                                 onChange={(e) => handleOtpChange(e.target.value, index)}
                                                 className="w-12 h-14 text-center text-xl font-bold rounded-xl bg-zinc-950/50 border border-zinc-800 text-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 transition-all"
